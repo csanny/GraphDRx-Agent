@@ -11,5 +11,10 @@ The framework consists of two main components: **GraphDRx**, which retrieves and
 - Ollama for local embedding and language-model inference
 - A CUDA-capable GPU is strongly recommended for local LLM inference; experiments were conducted on an NVIDIA RTX A4500 GPU
 
+
+## Data
+GraphDRx requires a locally constructed biomedical knowledge graph and derived RAG tables based on PrimeKG, PubChem, ChEMBL, and CTD. Third-party-derived data are not redistributed in this repository; source databases and data preparation are described in the manuscript.
+
+
 ## Citation
-A manuscript describing GraphDRX-Agent has been submitted for publication.
+A manuscript describing GraphDRx-Agent has been submitted for publication.
