@@ -1,0 +1,665 @@
+{
+  "method_name": "GraphDRx retrieval pipeline - deterministic anchors with structural single-indirect reserve",
+  "config_id": "graphdrx_final_structural_reserve_v1",
+  "random_seed": 42,
+  "design_constraints": {
+    "area_adaptation_basis": "independent nonbenchmark KG topology from a frozen 696-disease core design sample; no gold labels, model outputs, or benchmark outcomes",
+    "disease_name_rules": false,
+    "drug_or_gene_allowlists": false,
+    "gold_labels_used_for_runtime_policy": false,
+    "outcome_metrics_used_for_runtime_weights": false,
+    "direct_target_disease_treatment_edges_used_for_candidate_paths": false,
+    "target_disease_resolution": "case_insensitive_full_name_equality_with_virtual_bundle_for_exact_duplicates",
+    "posthoc_candidate_verifier": false,
+    "policy_design_population": {
+      "source": "nonbenchmark strict-single-area core retrieval population",
+      "n_diseases": 696,
+      "area_counts": {
+        "autoimmune_derm_inflammatory": 100,
+        "cancer": 100,
+        "cardiovascular": 100,
+        "hematologic_genetic": 100,
+        "infectious": 96,
+        "metabolic_endocrine": 100,
+        "neuro_mental": 100
+      },
+      "benchmark_excluded": true,
+      "gold_audit": false,
+      "llm_used": false,
+      "source_sample_sha256": "189bb4cd555323780f36963a7a83a81613a1bb881146c290f55034daa56ab4f7",
+      "analysis_script_version": "graphdrx-kg-area-structure-v1.0.0"
+    },
+    "final_ranking_policy": "single_indirect_only_reserve; no additive cross-branch corroboration coefficient",
+    "structural_ranking_runtime_inputs": [
+      "source_disease_context_fallback_graph",
+      "source_vector_neighbor_anchor_graph",
+      "embedding_prior_score > prior_threshold",
+      "source_common_direct_graph"
+    ],
+    "structural_ranking_gold_labels_used_at_runtime": false
+  },
+  "retrieval": {
+    "candidate_k": 200,
+    "path_limit_per_pattern": 30,
+    "prior_verify_timeout_sec": 25,
+    "prior_verify_enabled_patterns": [
+      "gene_gene",
+      "bio_bridge"
+    ],
+    "rank_views": {
+      "retrieval_final": "Eval1 ranking before translational calibration",
+      "translational_priority": "Downstream audit ranking with independent translational calibration, risk partition, and sparse corroboration partition"
+    },
+    "prior_existing_graph_policy": {
+      "skip_existing_graph_drugs": true,
+      "interpretation": "Prior drugs already supported by T/B/D retain their existing graph path and receive semantic prior provenance without claiming explicit C_v re-verification. Prior-only drugs must pass target-disease graph verification before admission."
+    }
+  },
+  "disease_prior": {
+    "mode": "vector_anchor_verify",
+    "vector_anchor_top_diseases": 30,
+    "vector_anchor_max_genes": 100,
+    "vector_anchor_max_terms": 140,
+    "prior_verify_top_n": 120,
+    "prior_verify_limit_per_pattern": 5,
+    "mask_eval_diseases_from_prior": true,
+    "prior_drug_seed_relations": [
+      "indication",
+      "off_label_use",
+      "tested_indication",
+      "studied_for_treatment_of"
+    ],
+    "tested_indication_phase_policy": "retain edge phases 0, 0.5, 1, 2, 3, and 4 (and missing as weakest); apply edge-level phase-aware weights; require phase >=1 only when tested_indication is used as primary family-clinical support",
+    "contraindication_only_seed_allowed": false
+  },
+  "drug_rerank": {
+    "drug_embedding_weight": 0.6,
+    "offline_rerank_drug_weight": 0.4
+  },
+  "translational_calibration": {
+    "approved_bonus": 0.08,
+    "withdrawn_penalty": 0.8,
+    "black_box_penalty": 0.15,
+    "extreme_property_penalty": 0.12,
+    "mw_upper": 900.0,
+    "tpsa_upper": 250.0,
+    "abs_logp_upper": 8.0,
+    "qed_lower": 0.1,
+    "area_specific": false,
+    "target_disease_contraindication_penalty": 1.0
+  },
+  "relation_semantics": {
+    "indication": {
+      "family": "disease_drug_prior",
+      "polarity": "positive",
+      "semantic_label": "clinical_indication"
+    },
+    "off_label_use": {
+      "family": "disease_drug_prior",
+      "polarity": "positive",
+      "semantic_label": "off_label_context"
+    },
+    "tested_indication": {
+      "family": "disease_drug_prior",
+      "polarity": "positive",
+      "semantic_label": "clinical_development_context_phase_aware"
+    },
+    "studied_for_treatment_of": {
+      "family": "disease_drug_prior",
+      "polarity": "weak_positive",
+      "semantic_label": "literature_treatment_context"
+    },
+    "studied_for_marker_mechanism_of": {
+      "family": "disease_drug_context",
+      "polarity": "context_only",
+      "semantic_label": "marker_mechanism_context_not_treatment_evidence"
+    },
+    "contraindication": {
+      "family": "disease_drug_risk",
+      "polarity": "negative",
+      "semantic_label": "risk_counter_evidence"
+    },
+    "inhibition": {
+      "family": "drug_gene_action",
+      "polarity": "positive",
+      "semantic_label": "directional_pharmacology"
+    },
+    "activation": {
+      "family": "drug_gene_action",
+      "polarity": "positive",
+      "semantic_label": "directional_pharmacology"
+    },
+    "modulation": {
+      "family": "drug_gene_action",
+      "polarity": "positive",
+      "semantic_label": "directional_pharmacology"
+    },
+    "target": {
+      "family": "drug_gene_action",
+      "polarity": "weak_positive",
+      "semantic_label": "target_annotation"
+    },
+    "binding": {
+      "family": "drug_gene_action",
+      "polarity": "weak_positive",
+      "semantic_label": "binding_evidence"
+    },
+    "enzyme": {
+      "family": "drug_gene_action",
+      "polarity": "weak_positive",
+      "semantic_label": "adme_relation"
+    },
+    "transporter": {
+      "family": "drug_gene_action",
+      "polarity": "weak_positive",
+      "semantic_label": "adme_relation"
+    },
+    "carrier": {
+      "family": "drug_gene_action",
+      "polarity": "weak_positive",
+      "semantic_label": "adme_relation"
+    }
+  },
+  "anchor_pattern_policy": {
+    "basis": "independent nonbenchmark 696-disease KG structural audit; candidate-generating broad BP/PATH bridges were globally removed because they produced nonselective expansion across areas",
+    "areas": {
+      "autoimmune_derm_inflammatory": {
+        "disabled": [
+          "drug_to_anchor_bioprocess",
+          "drug_to_disease_via_anchor_bio"
+        ],
+        "limits": {
+          "drug_to_disease_direct_gene_action": 18,
+          "drug_to_disease_anchor_gene": 30,
+          "drug_to_disease_via_anchor_gene_path": 30,
+          "drug_target_to_anchor_disease_gene_via_bio": 24,
+          "drug_to_anchor_gene": 18,
+          "drug_target_ppi_to_anchor_gene": 12,
+          "drug_to_disease_via_vector_phenotype_gene": 10
+        },
+        "timeouts": {
+          "drug_target_ppi_to_anchor_gene": 18,
+          "drug_to_disease_via_vector_phenotype_gene": 18
+        }
+      },
+      "cancer": {
+        "disabled": [
+          "drug_target_ppi_to_anchor_gene",
+          "drug_to_anchor_bioprocess",
+          "drug_to_disease_via_anchor_bio",
+          "drug_to_disease_via_vector_phenotype_gene"
+        ],
+        "limits": {
+          "drug_to_disease_direct_gene_action": 18,
+          "drug_to_disease_anchor_gene": 28,
+          "drug_to_disease_via_anchor_gene_path": 30,
+          "drug_target_to_anchor_disease_gene_via_bio": 24,
+          "drug_to_anchor_gene": 18
+        },
+        "timeouts": {
+          "drug_to_disease_via_anchor_gene_path": 35,
+          "drug_target_to_anchor_disease_gene_via_bio": 35
+        }
+      },
+      "cardiovascular": {
+        "disabled": [
+          "drug_to_anchor_bioprocess",
+          "drug_to_disease_via_anchor_bio"
+        ],
+        "limits": {
+          "drug_to_disease_direct_gene_action": 18,
+          "drug_to_disease_anchor_gene": 28,
+          "drug_to_disease_via_anchor_gene_path": 30,
+          "drug_target_to_anchor_disease_gene_via_bio": 24,
+          "drug_to_anchor_gene": 16,
+          "drug_target_ppi_to_anchor_gene": 12,
+          "drug_to_disease_via_vector_phenotype_gene": 10
+        },
+        "timeouts": {
+          "drug_target_ppi_to_anchor_gene": 18,
+          "drug_to_disease_via_anchor_gene_path": 35,
+          "drug_to_disease_via_vector_phenotype_gene": 18
+        }
+      },
+      "hematologic_genetic": {
+        "disabled": [
+          "drug_to_anchor_bioprocess",
+          "drug_to_disease_via_anchor_bio"
+        ],
+        "limits": {
+          "drug_to_disease_direct_gene_action": 22,
+          "drug_to_disease_anchor_gene": 30,
+          "drug_to_disease_via_anchor_gene_path": 28,
+          "drug_target_to_anchor_disease_gene_via_bio": 22,
+          "drug_to_anchor_gene": 20,
+          "drug_target_ppi_to_anchor_gene": 25,
+          "drug_to_disease_via_vector_phenotype_gene": 10
+        },
+        "timeouts": {
+          "drug_target_ppi_to_anchor_gene": 24,
+          "drug_to_disease_via_anchor_gene_path": 35,
+          "drug_to_disease_via_vector_phenotype_gene": 18
+        }
+      },
+      "infectious": {
+        "disabled": [
+          "drug_to_anchor_bioprocess",
+          "drug_to_disease_via_anchor_bio",
+          "drug_to_disease_via_vector_phenotype_gene"
+        ],
+        "limits": {
+          "drug_to_disease_direct_gene_action": 12,
+          "drug_to_disease_anchor_gene": 24,
+          "drug_to_disease_via_anchor_gene_path": 24,
+          "drug_target_to_anchor_disease_gene_via_bio": 18,
+          "drug_to_anchor_gene": 12,
+          "drug_target_ppi_to_anchor_gene": 12
+        },
+        "timeouts": {
+          "drug_target_ppi_to_anchor_gene": 18,
+          "drug_to_disease_via_anchor_gene_path": 28
+        }
+      },
+      "metabolic_endocrine": {
+        "disabled": [
+          "drug_to_anchor_bioprocess",
+          "drug_to_disease_via_anchor_bio"
+        ],
+        "limits": {
+          "drug_to_disease_direct_gene_action": 16,
+          "drug_to_disease_anchor_gene": 28,
+          "drug_to_disease_via_anchor_gene_path": 28,
+          "drug_target_to_anchor_disease_gene_via_bio": 22,
+          "drug_to_anchor_gene": 16,
+          "drug_target_ppi_to_anchor_gene": 10,
+          "drug_to_disease_via_vector_phenotype_gene": 10
+        },
+        "timeouts": {
+          "drug_target_ppi_to_anchor_gene": 14,
+          "drug_to_disease_via_vector_phenotype_gene": 18
+        }
+      },
+      "neuro_mental": {
+        "disabled": [
+          "drug_to_anchor_bioprocess",
+          "drug_to_disease_via_anchor_bio"
+        ],
+        "limits": {
+          "drug_to_disease_direct_gene_action": 18,
+          "drug_to_disease_anchor_gene": 30,
+          "drug_to_disease_via_anchor_gene_path": 30,
+          "drug_target_to_anchor_disease_gene_via_bio": 24,
+          "drug_to_anchor_gene": 18,
+          "drug_target_ppi_to_anchor_gene": 10,
+          "drug_to_disease_via_vector_phenotype_gene": 10
+        },
+        "timeouts": {
+          "drug_target_ppi_to_anchor_gene": 14,
+          "drug_to_disease_via_anchor_gene_path": 35,
+          "drug_to_disease_via_vector_phenotype_gene": 18
+        }
+      }
+    },
+    "globally_disabled": [
+      "drug_to_anchor_bioprocess",
+      "drug_to_disease_via_anchor_bio"
+    ],
+    "global_disable_rationale": {
+      "drug_to_anchor_bioprocess": "anchor-only BP/PATH retrieval lacks an explicit target-disease connection and is highly vulnerable to generic hubs",
+      "drug_to_disease_via_anchor_bio": "the broad disease-gene-to-BP/PATH bridge produced thousands of candidate drugs in the independent design population; narrower anchor-gene-constrained bio/path motifs remain enabled"
+    }
+  },
+  "structural_area_policy": {
+    "basis": "independent nonbenchmark strict-single-area core disease sample (n=696)",
+    "areas": {
+      "autoimmune_derm_inflammatory": {
+        "prior_verify_patterns": [
+          "gene_gene",
+          "bio_bridge",
+          "pheno_gene_bridge"
+        ],
+        "sparse_rescue": {
+          "enabled": false
+        },
+        "use_vector_phenotypes": true,
+        "use_prior_verification_phenotypes": true
+      },
+      "cancer": {
+        "prior_verify_patterns": [
+          "gene_gene",
+          "bio_bridge"
+        ],
+        "sparse_rescue": {
+          "enabled": false
+        },
+        "use_vector_phenotypes": false,
+        "use_prior_verification_phenotypes": false
+      },
+      "cardiovascular": {
+        "prior_verify_patterns": [
+          "gene_gene",
+          "bio_bridge"
+        ],
+        "sparse_rescue": {
+          "enabled": false
+        },
+        "use_vector_phenotypes": true,
+        "use_prior_verification_phenotypes": true
+      },
+      "hematologic_genetic": {
+        "prior_verify_patterns": [
+          "gene_gene",
+          "bio_bridge",
+          "pheno_gene_bridge",
+          "sibling_gene_action"
+        ],
+        "sparse_rescue": {
+          "enabled": true,
+          "max_direct_gene_count": 3,
+          "enabled_patterns": [
+            "direct_gene_action",
+            "ppi_gene_action",
+            "sibling_gene_action"
+          ],
+          "dense_allowed_patterns": [],
+          "limits": {
+            "ppi_gene_action": 180,
+            "sibling_gene_action": 180,
+            "direct_gene_action": 120
+          },
+          "timeouts": {
+            "ppi_gene_action": 25,
+            "sibling_gene_action": 25,
+            "direct_gene_action": 20
+          },
+          "tier_insert_after": {
+            "strong": 20,
+            "medium": 80,
+            "weak": 92
+          },
+          "tier_max": {
+            "strong": 3,
+            "medium": 4,
+            "weak": 8
+          }
+        },
+        "use_vector_phenotypes": true,
+        "use_prior_verification_phenotypes": true
+      },
+      "infectious": {
+        "prior_verify_patterns": [
+          "gene_gene",
+          "bio_bridge",
+          "sibling_gene_action",
+          "family_label_edge"
+        ],
+        "sparse_rescue": {
+          "enabled": true,
+          "max_direct_gene_count": 5,
+          "enabled_patterns": [
+            "direct_gene_action",
+            "ppi_gene_action",
+            "sibling_gene_action",
+            "family_clinical_prior"
+          ],
+          "dense_allowed_patterns": [],
+          "limits": {
+            "ppi_gene_action": 160,
+            "sibling_gene_action": 220,
+            "family_clinical_prior": 120,
+            "direct_gene_action": 120
+          },
+          "timeouts": {
+            "ppi_gene_action": 25,
+            "sibling_gene_action": 25,
+            "family_clinical_prior": 20,
+            "direct_gene_action": 20
+          },
+          "tier_insert_after": {
+            "strong": 40,
+            "medium": 82,
+            "weak": 92
+          },
+          "tier_max": {
+            "strong": 3,
+            "medium": 5,
+            "weak": 8
+          }
+        },
+        "use_vector_phenotypes": false,
+        "use_prior_verification_phenotypes": false
+      },
+      "metabolic_endocrine": {
+        "prior_verify_patterns": [
+          "gene_gene",
+          "bio_bridge",
+          "pheno_gene_bridge"
+        ],
+        "sparse_rescue": {
+          "enabled": false
+        },
+        "use_vector_phenotypes": true,
+        "use_prior_verification_phenotypes": true
+      },
+      "neuro_mental": {
+        "prior_verify_patterns": [
+          "gene_gene",
+          "bio_bridge",
+          "pheno_gene_bridge"
+        ],
+        "sparse_rescue": {
+          "enabled": false
+        },
+        "use_vector_phenotypes": true,
+        "use_prior_verification_phenotypes": true
+      }
+    },
+    "design_population": {
+      "n_diseases": 696,
+      "benchmark_excluded": true,
+      "sample_sha256": "189bb4cd555323780f36963a7a83a81613a1bb881146c290f55034daa56ab4f7"
+    }
+  },
+  "family_hierarchy_specificity": {
+    "basis": "parent DISEASE child-degree with continuous specificity and distinct-disease support multiplicity; no disease-name or answer rules",
+    "score": "1/log2(2+family_child_degree)",
+    "support_base": 0.4,
+    "max_required_supports": 4,
+    "minimum_specificity": 0.2,
+    "applies_to": [
+      "family_label_edge",
+      "sibling_gene_action",
+      "family_clinical_prior"
+    ],
+    "acceptance": "family-only evidence is evaluated within one ontology-parent cluster; distinct sibling diseases count once, qualified semantic-prior provenance adds at most one corroboration unit per cluster, and only the strongest sufficiently supported parent cluster is retained",
+    "clinical_support_relations": {
+      "primary": [
+        "indication",
+        "off_label_use"
+      ],
+      "tested_indication_min_phase": 1.0,
+      "secondary_context_only": [
+        "studied_for_treatment_of"
+      ],
+      "excluded": [
+        "studied_for_marker_mechanism_of"
+      ]
+    }
+  },
+  "candidate_floor_rescue": {
+    "minimum_candidates": 20,
+    "enabled": true,
+    "basis": "candidate count and KG topology only; controlled by sparse-rescue ablation",
+    "enabled_patterns": [
+      "direct_gene_action",
+      "ppi_gene_action",
+      "sibling_gene_action",
+      "family_clinical_prior"
+    ],
+    "dense_allowed_patterns": [
+      "direct_gene_action",
+      "ppi_gene_action",
+      "sibling_gene_action",
+      "family_clinical_prior"
+    ],
+    "limits": {
+      "direct_gene_action": 120,
+      "ppi_gene_action": 160,
+      "sibling_gene_action": 180,
+      "family_clinical_prior": 120
+    },
+    "timeouts": {
+      "direct_gene_action": 20,
+      "ppi_gene_action": 25,
+      "sibling_gene_action": 25,
+      "family_clinical_prior": 20
+    },
+    "tier_insert_after": {
+      "strong": 10,
+      "medium": 60,
+      "weak": 90
+    },
+    "tier_max": {
+      "strong": 3,
+      "medium": 5,
+      "weak": 10
+    }
+  },
+  "pattern_timeout_retry": {
+    "enabled": true,
+    "patterns": [
+      "drug_to_disease_via_anchor_gene_path",
+      "drug_target_to_anchor_disease_gene_via_bio",
+      "drug_to_disease_via_anchor_bio"
+    ],
+    "anchor_gene_limit": 6,
+    "anchor_term_limit": 24,
+    "result_limit": 12,
+    "timeout_sec": 18,
+    "basis": "single bounded retry with reduced anchor and result cardinality; no disease-specific exception"
+  },
+  "candidate_identity_gate": {
+    "scope": "candidate-floor and sparse-rescue candidates",
+    "basis": "non-name pharmacological identity metadata; Group/approval status alone is insufficient",
+    "accepted_evidence": [
+      "ChEMBL molecule identifier",
+      "PubChem CID",
+      "InChIKey",
+      "Drug_Type",
+      "structured molecular properties",
+      "inorganic molecular record"
+    ]
+  },
+  "reproducibility_and_provenance": {
+    "candidate_source_flags": [
+      "source_disease_context_fallback_graph",
+      "source_vector_neighbor_anchor_graph",
+      "source_common_direct_graph",
+      "source_prior_drug_target_graph",
+      "source_embedding_prior"
+    ],
+    "multi_branch_evidence_merge": true,
+    "branch_level_query_statistics": true,
+    "run_manifest_with_code_and_config_sha256": true,
+    "benchmark_answer_columns_excluded_from_retrieval_case_object": true,
+    "policy_design_sample_hash_in_config": true,
+    "global_pattern_disable_trace_in_runtime": true
+  },
+  "scoring": {
+    "basis": "disease/drug/gold-agnostic pharmacological relation semantics and one-pass evidence integration",
+    "drug_gene_action_type_weights": {
+      "inhibitor": 3.05,
+      "blocker": 3.05,
+      "antagonist": 2.95,
+      "inverse agonist": 2.9,
+      "degrader": 3.1,
+      "negative allosteric modulator": 2.85,
+      "agonist": 3.05,
+      "activator": 3.05,
+      "opener": 2.9,
+      "partial agonist": 2.85,
+      "releasing agent": 2.75,
+      "positive allosteric modulator": 2.9,
+      "positive modulator": 2.75,
+      "modulator": 2.6,
+      "stabiliser": 2.65,
+      "stabilizer": 2.65,
+      "binding agent": 2.05,
+      "substrate": 1.75
+    },
+    "drug_gene_relation_weights": {
+      "inhibition": 2.75,
+      "activation": 2.75,
+      "modulation": 2.4,
+      "binding": 1.6,
+      "target": 1.4,
+      "enzyme": 0.75,
+      "transporter": 0.7,
+      "carrier": 0.6
+    },
+    "sparse_drug_relation_weights": {
+      "inhibition": 0.42,
+      "activation": 0.42,
+      "modulation": 0.32,
+      "binding": 0.18,
+      "target": 0.15,
+      "enzyme": 0.12,
+      "transporter": 0.1,
+      "carrier": 0.05
+    },
+    "sparse_drug_action_type_weights": {
+      "inhibitor": 0.47,
+      "blocker": 0.47,
+      "antagonist": 0.45,
+      "inverse agonist": 0.44,
+      "degrader": 0.5,
+      "negative allosteric modulator": 0.43,
+      "agonist": 0.47,
+      "activator": 0.47,
+      "opener": 0.44,
+      "partial agonist": 0.42,
+      "releasing agent": 0.4,
+      "positive allosteric modulator": 0.44,
+      "positive modulator": 0.4,
+      "modulator": 0.36,
+      "stabiliser": 0.37,
+      "stabilizer": 0.37,
+      "binding agent": 0.22,
+      "substrate": 0.19
+    },
+    "sparse_disease_drug_relation_weights": {
+      "indication": 0.3,
+      "off_label_use": 0.18,
+      "tested_indication": 0.12,
+      "studied_for_treatment_of": 0.08,
+      "contraindication": -0.8
+    },
+    "final_integration": {
+      "disease_prior_weight": 1.0,
+      "drug_embedding_weight": 0.4,
+      "side_effect_risk_weight": 0.1,
+      "note": "Graph/path evidence, semantic disease prior, drug embedding, and side-effect risk are integrated once. No additive cross-branch corroboration bonus is used. A stable structural core/reserve ordering is applied after sparse rescue and final deduplication."
+    }
+  },
+  "runtime_experiment_note": "Default runtime separates prior-verifier evidence hierarchy from newly activated topology-degree penalties: evidence hierarchy enabled; topology specificity disabled.",
+  "structural_evidence_ranking": {
+    "enabled": true,
+    "mode": "single_indirect_only_reserve",
+    "stage": "after_sparse_rescue_and_stable_dedup_before_eval1",
+    "prior_threshold": 1e-12,
+    "core_definition": [
+      "semantic prior support (C_p)",
+      "direct target-disease drug-gene path (D)",
+      "two or more graph branches among T/B/D",
+      "all other candidates except exact anchor-only and exact vector-only"
+    ],
+    "reserve_definition": [
+      "exact T-only",
+      "exact B-only"
+    ],
+    "preserve_order_within_pool": true,
+    "deletes_candidates": false,
+    "changes_numeric_scores": false,
+    "uses_gold_labels_at_runtime": false
+  }
+}
