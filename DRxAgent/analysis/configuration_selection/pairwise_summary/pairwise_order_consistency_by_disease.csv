@@ -1,0 +1,46 @@
+config_a,config_b,disease,preference_ab,preference_ba,order_consistent
+OQQ,OQO,Alzheimer disease,OQO,OQO,True
+OQQ,OQO,Androgenetic alopecia,OQO,OQO,True
+OQQ,OQO,Chronic hepatitis C virus infection,OQO,OQO,True
+OQQ,OQO,Congestive heart failure,OQQ,OQO,False
+OQQ,OQO,Crohn disease,OQO,OQO,True
+OQQ,OQO,Cushing syndrome,OQO,OQO,True
+OQQ,OQO,Dengue disease,OQO,OQO,True
+OQQ,OQO,Endometrial carcinoma,OQQ,OQQ,True
+OQQ,OQO,Hemophilia,OQQ,OQO,False
+OQQ,OQO,Hyperinsulinemic hypoglycemia,OQO,OQO,True
+OQQ,OQO,Non-small cell lung carcinoma,OQQ,OQQ,True
+OQQ,OQO,Parkinson disease,OQO,OQO,True
+OQQ,OQO,Pernicious anemia,OQO,OQO,True
+OQQ,OQO,Pulmonary arterial hypertension,OQO,OQO,True
+OQQ,OQO,Respiratory syncytial virus infectious disease,tie,OQO,False
+QQO,OQO,Alzheimer disease,OQO,OQO,True
+QQO,OQO,Androgenetic alopecia,OQO,OQO,True
+QQO,OQO,Chronic hepatitis C virus infection,QQO,OQO,False
+QQO,OQO,Congestive heart failure,QQO,OQO,False
+QQO,OQO,Crohn disease,QQO,OQO,False
+QQO,OQO,Cushing syndrome,OQO,OQO,True
+QQO,OQO,Dengue disease,QQO,OQO,False
+QQO,OQO,Endometrial carcinoma,QQO,OQO,False
+QQO,OQO,Hemophilia,QQO,OQO,False
+QQO,OQO,Hyperinsulinemic hypoglycemia,OQO,OQO,True
+QQO,OQO,Non-small cell lung carcinoma,QQO,QQO,True
+QQO,OQO,Parkinson disease,OQO,OQO,True
+QQO,OQO,Pernicious anemia,QQO,OQO,False
+QQO,OQO,Pulmonary arterial hypertension,QQO,OQO,False
+QQO,OQO,Respiratory syncytial virus infectious disease,QQO,OQO,False
+QQO,OQQ,Alzheimer disease,QQO,OQQ,False
+QQO,OQQ,Androgenetic alopecia,tie,OQQ,False
+QQO,OQQ,Chronic hepatitis C virus infection,QQO,OQQ,False
+QQO,OQQ,Congestive heart failure,QQO,OQQ,False
+QQO,OQQ,Crohn disease,QQO,OQQ,False
+QQO,OQQ,Cushing syndrome,OQQ,OQQ,True
+QQO,OQQ,Dengue disease,QQO,OQQ,False
+QQO,OQQ,Endometrial carcinoma,QQO,OQQ,False
+QQO,OQQ,Hemophilia,QQO,OQQ,False
+QQO,OQQ,Hyperinsulinemic hypoglycemia,QQO,OQQ,False
+QQO,OQQ,Non-small cell lung carcinoma,QQO,QQO,True
+QQO,OQQ,Parkinson disease,QQO,OQQ,False
+QQO,OQQ,Pernicious anemia,QQO,OQQ,False
+QQO,OQQ,Pulmonary arterial hypertension,QQO,QQO,True
+QQO,OQQ,Respiratory syncytial virus infectious disease,QQO,OQQ,False

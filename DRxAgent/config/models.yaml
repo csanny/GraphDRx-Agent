@@ -1,0 +1,19 @@
+models:
+  G: gemma3:12b
+  O: gpt-oss:20b
+  Q: qwen3:14b
+
+ollama:
+  base_url: http://localhost:11434
+  temperature: 0
+  seed: 42
+  num_ctx: 32768
+  num_predict: 4200
+  timeout_seconds: 900
+  preflight_timeout_seconds: 60
+  keep_alive: 30m
+  structural_repair_attempts: 1
+  thinking_by_model:
+    gpt-oss:20b: low
+    qwen3:14b: false
+    gemma3:12b: false

@@ -1,0 +1,35 @@
+selection:
+  expected_unique_diseases: 15
+  expected_candidates_per_disease: 5
+
+panel_dimensions:
+  - evidence_groundedness_factuality
+  - mechanistic_consistency
+  - relevance_scientific_specificity
+  - uncertainty_calibration
+  - experimental_actionability
+
+score_scale:
+  minimum: 1
+  maximum: 5
+
+primary_score:
+  aggregation: equal_weight_mean
+
+judge:
+  provider: openai
+  model: gpt-5.6-terra
+  temperature: 0
+  reasoning_effort: medium
+  store: false
+  repeats: 1
+  mode: disease
+  timeout_seconds: 900
+  max_output_tokens: 12000
+  max_chars_per_section: 6000
+  validation_attempts: 2
+
+bootstrap:
+  resamples: 20000
+  seed: 42
+  cluster: disease

@@ -1,0 +1,2 @@
+configuration_a,configuration_b,mean_difference_a_minus_b,ci_low,ci_high,bootstrap_probability_a_gt_b,n_paired_diseases
+QQO,OQQ,0.03200000000000009,-0.17600000000000007,0.21333333333333354,0.6481,15

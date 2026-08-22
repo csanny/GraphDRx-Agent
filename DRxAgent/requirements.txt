@@ -1,0 +1,6 @@
+requests>=2.31
+pandas>=2.2
+numpy>=1.26
+PyYAML>=6.0
+openai>=2.21,<3
+neo4j>=5.20

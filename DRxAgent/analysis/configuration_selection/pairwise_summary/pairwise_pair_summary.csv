@@ -1,0 +1,4 @@
+config_a,config_b,n_presentations,a_preferences,b_preferences,ties,a_preference_rate,b_preference_rate,tie_rate,order_consistency_rate
+OQQ,OQO,30,6,23,1,0.2,0.7666666666666667,0.03333333333333333,0.8
+QQO,OQO,30,11,19,0,0.36666666666666664,0.6333333333333333,0.0,0.4
+QQO,OQQ,30,15,14,1,0.5,0.4666666666666667,0.03333333333333333,0.2
